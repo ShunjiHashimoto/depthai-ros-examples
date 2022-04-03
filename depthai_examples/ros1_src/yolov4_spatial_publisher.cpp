@@ -174,6 +174,10 @@ int main(int argc, char** argv){
         height = 480;
     }
 
+    // auto imgFrame = colorQueue->get<dai::ImgFrame>();
+    // std::cout << "型：" << typeid(imgFrame->getCvFrame()).name() << std::endl;
+    // cv::Mat frame = imgFrame->getCvFrame();
+
     dai::rosBridge::ImageConverter rgbConverter(tfPrefix + "_rgb_camera_optical_frame", false);
     auto rgbCameraInfo = rgbConverter.calibrationToCameraInfo(calibrationHandler, dai::CameraBoardSocket::RGB, 416, 416);
     rgbPublish = std::make_unique<dai::rosBridge::BridgePublisher<sensor_msgs::Image, dai::ImgFrame>>(colorQueue, 
@@ -189,11 +193,13 @@ int main(int argc, char** argv){
                                                                                      "color");
 
     dai::rosBridge::SpatialDetectionConverter detConverter(tfPrefix + "_rgb_camera_optical_frame", 416, 416, false);
+    // class BridgePublisherを宣言
+    // detectionPublish(std::shared_ptr<dai::DataOutputQueue>, nh, rostopic, converter, queueSize, cameraInfoData, cameraName)
     dai::rosBridge::BridgePublisher<depthai_ros_msgs::SpatialDetectionArray, dai::SpatialImgDetections> detectionPublish(detectionQueue,
                                                                                                          pnh, 
-                                                                                                         std::string("color/yolov4_Spatial_detections"),
-                                                                                                         std::bind(&dai::rosBridge::SpatialDetectionConverter::toRosMsg, 
-                                                                                                         &detConverter,
+                                                                                                         std::string("color/yolov4_Spatial_detections"), // トピック名
+                                                                                                         std::bind(&dai::rosBridge::SpatialDetectionConverter::toRosMsg, // SpatialDetectionConverter.cppに記載のtoRosMsgを使って推論結果を出す 
+                                                                                                         &detConverter, // 得られた推論結果をROSのmsg型に変換する
                                                                                                          std::placeholders::_1, 
                                                                                                          std::placeholders::_2) , 
                                                                                                          30);
@@ -212,7 +218,6 @@ int main(int argc, char** argv){
                                                                                      "stereo");
 
     depthPublish->addPublisherCallback();
-
     detectionPublish.addPublisherCallback(); 
     rgbPublish->addPublisherCallback(); // addPublisherCallback works only when the dataqueue is non blocking.
 

@@ -43,4 +43,7 @@
         <param name="monoResolution"   value="$(arg monoResolution)"/>
     </node>
 
+    <node name="rgb_subscriber" pkg="depthai_examples" type="rgb_subscriber_node" output="screen" required="true">
+    </node>
+
 </launch>
