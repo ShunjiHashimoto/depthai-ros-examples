@@ -31,6 +31,7 @@ int main(int argc, char** argv){
 
     ros::Subscriber rgb_sub = nh.subscribe("/yolov4_publisher/color/image", 5, rgbCallback);
     ros::Subscriber detection_sub = nh.subscribe("/yolov4_publisher/color/yolov4_Spatial_detections", 5, detectCallback);
+    ros::Publisher detected_pub = nh.advertise<sensor_msgs::Image>("/yolov4_publisher/color/detected_image", 1000);
     auto color = cv::Scalar(255, 255, 255);
     ros::Rate loop_rate(10);
 
@@ -60,6 +61,8 @@ int main(int argc, char** argv){
 
             cv::rectangle(rgbImage, cv::Rect(cv::Point(x1, y1), cv::Point(x2, y2)), color, cv::FONT_HERSHEY_SIMPLEX);
         }
+        sensor_msgs::ImagePtr detected_image = cv_bridge::CvImage(std_msgs::Header(), "bgr8", rgbImage).toImageMsg();
+        detected_pub.publish(detected_image);
         if(!rgbImage.empty()) {
             cv::imshow("rgb", rgbImage);
             cv::waitKey(1);
