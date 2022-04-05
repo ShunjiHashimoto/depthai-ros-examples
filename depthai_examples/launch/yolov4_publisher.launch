@@ -46,4 +46,6 @@
     <node name="rgb_subscriber" pkg="depthai_examples" type="rgb_subscriber_node" output="screen" required="true">
     </node>
 
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find depthai_examples)/rviz/yolov4.rviz" />
+
 </launch>

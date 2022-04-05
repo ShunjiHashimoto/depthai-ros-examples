@@ -32,22 +32,20 @@ auto markerPublisher(depthai_ros_msgs::SpatialDetection spatialdetected){
     marker.header.stamp = ros::Time::now();
     marker.ns = "basic_shapes";
     marker.id = 0;
-    marker.type = visualization_msgs::Marker::CUBE;
+    marker.type = visualization_msgs::Marker::MESH_RESOURCE;
+    marker.mesh_resource = "package://depthai_examples/mesh/penguin.obj";
     marker.action = visualization_msgs::Marker::ADD;
-    marker.pose.position.x = spatialdetected.position.x;
-    marker.pose.position.y = spatialdetected.position.y;
-    marker.pose.position.z = spatialdetected.position.z;
-    marker.pose.orientation.x = 0.0;
-    marker.pose.orientation.y = 0.0;
-    marker.pose.orientation.z = 0.0;
-    marker.pose.orientation.w = 1.0;
-    marker.scale.x = 0.1;
-    marker.scale.y = 0.1;
-    marker.scale.z = 0.1;
-    marker.color.r = 0.0f;
-    marker.color.g = 1.0f;
-    marker.color.b = 0.0f;
-    marker.color.a = 1.0;
+    marker.pose.position.x = spatialdetected.position.z;
+    marker.pose.position.y = spatialdetected.position.x;
+    marker.pose.position.z = spatialdetected.position.y;
+    marker.pose.orientation.x = -0.5;
+    marker.pose.orientation.y = 0.5;
+    marker.pose.orientation.z = 0.5;
+    marker.pose.orientation.w = -0.5;
+    marker.scale.x = 0.0001;
+    marker.scale.y = 0.0001;
+    marker.scale.z = 0.0001;
+    marker.mesh_use_embedded_materials = true;
     marker.lifetime = ros::Duration();
     return marker;
 }
@@ -96,10 +94,6 @@ int main(int argc, char** argv){
         }
         sensor_msgs::ImagePtr detected_image = cv_bridge::CvImage(std_msgs::Header(), "bgr8", rgbImage).toImageMsg();
         detected_pub.publish(detected_image);
-        if(!rgbImage.empty()) {
-            cv::imshow("rgb", rgbImage);
-            cv::waitKey(1);
-        }
         ros::spinOnce();
 		loop_rate.sleep();
     }
